@@ -6,4 +6,4 @@ Initially contains a prelimanry data cleaner, imputing values except those that 
 Developer note:
 Please createe your own branch when working on this project using:
 
-git checkout -b <insert-your-name> 
+git checkout -b insert-your-name
