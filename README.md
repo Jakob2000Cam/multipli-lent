@@ -1,9 +1,67 @@
-# multipli-lent
-Repository for the Lent Multipli Hackbridge Project
+# Multiplii Hackbridge Project
+&nbsp;
+**Please refer to [Multiplii](https://www.multiplii.io/) for details on the product.**
+&nbsp;
 
-Initially contains a prelimanry data cleaner, imputing values except those that are dates (this will hopefully be addressed later). Numerical datatypes are fille with the column modes and strings are replaced with "unknown". Later stages could include more advanced imputing strategies such as MICE, but this should be sufficient for preliminary experimentation. Data is retrieved from the data/original directory and stored as a pkl file in data/processed. To open this please use pandas.read_pickle.
+---
+## Contents
 
-Developer note:
-Please createe your own branch when working on this project using:
+* Structure of the repository
+* How to use this
+* Outline of general workflow
+* Technical documentation
 
-git checkout -b insert-your-name
+## Structure of the repository
+
+All python files are contained in the root directory. The data directory contains the original and processed folders, which contain data before and after any type of processing respectively.
+
+## How to use this
+
+In order to develop this code please ask the owner of the directory to make you a developerand install git, then please run the following in your terminal.
+
+`git clone https://github.com/Jakob2000Cam/multipli-lent.git`
+
+`git checkout -b insert-your-name`
+
+Please make sure that you don't develop in the main branch, by running `git branch` and ensuring that the asterisk is next to your own branch rather than the main branch.
+
+## Outline of general workflow
+
+* Preprocess data using cleaner.py
+
+
+## Technical documentation
+
+This documentation outlines the functionality of the code and explains all the statistical decisions made along the process. It is intended as an aid for future developers.
+
+**cleaner**
+
+This file is responsible for cleaning data. It loads a csv file in from the data/original path as a pandas dataframe and changes column names for ease of use. It then applies a number of functions outlined below and stores data as a pkl file in order to preserve all features within the data/processed directory.
+
+*Note: the pandas.transform operates twice on the first row of the dataframe. As a result we manually subtract the introduced error. Ideally we would prevent this from happening in the first place.*
+
+The defined functions are:
+
+* data_cleaner
+* impute_columns
+* dates_and_times_corrector
+* extract_numbers
+
+data_cleaner
+
+This function calls on the extract_numbers function to clean a number of mixed data type columns. Additionally, dates are convert to pandas.datetime objects. Finally the dates_and_times_corrector is called to correct all times for timezones.
+
+impute_columns
+
+This serves to fill missing values. Two different imputers are created for text and numeric data types respectively. Missing text values are replaced with "unknown" for lack of a better strategy and missing numeric values are replaced with the mode of the column. This would ideally be replaced by a more sophisticated strategy later on. Dates are left as they are, hopefully later on they too can be imputed for example by converting to a numeric data type, finding some sort of average measure and then converting back to date. Data is returned a dataframe, however with scrambled column order.
+
+dates_and_times_corrector
+
+This extracts the time zone and then changes start and end times of meetings.
+
+extract_numbers
+
+This extracts numbers from strings. This function calls on the extract_numbers function to extract numbers from string data types that are not fully numerical (eg. "<10" would return 10).
+
+
+
