@@ -5,12 +5,17 @@ from sklearn.compose import ColumnTransformer
 from datetime import timedelta
 import numpy as np
 import re
+import os
+
+#creates os independent paths to read and write data
+read_path = os.path.join('data', 'original','labelled_october.csv')
+write_path = os.path.join('data', 'processed', 'cleaned_labelled_october.pkl')
 
 col_names = ['username', 'jobrole', 'instructor', 'companyname', 'timezone', 'companysize',
 			 'teamsize', 'starttime', 'endtime', 'lastsync', 'meetingtitle', 'noguest', 'tag']
-data_frame = pd.read_csv('data/original/labelled_october.csv', header=0, names=col_names)
+data_frame = pd.read_csv(read_path, header=0, names=col_names)
 
-
+#impute numeric and string type columns
 def impute_columns(data, col_names):
 
     text_imputer = Pipeline(steps=[
@@ -40,13 +45,6 @@ def data_cleaner(data):
 
     return data
 
-def find_mean_date(data_column):
-    
-    mean_date = pd.to_datetime(0)
-    date_values = data_column.values.astype(np.int64)
-    mean_date = pd.to_datetime(date_values.mean())
-
-    return mean_date
 
 #function that converts <x values to x
 def extract_numbers(item):
@@ -102,4 +100,4 @@ cleaned_data.at[0, 'endtime'] -=timedelta(hours=7)
 
 cleaned_data = impute_columns(cleaned_data, col_names)
 
-cleaned_data.to_pickle("data/processed/cleaned_labelled_october.pkl")
+cleaned_data.to_pickle(write_path)
