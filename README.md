@@ -49,11 +49,11 @@ The defined functions are:
 
 data_cleaner
 
-This function calls on the extract_numbers function to clean a number of mixed data type columns. Additionally, dates are convert to pandas.datetime objects. Finally the dates_and_times_corrector is called to correct all times for timezones.
+This function calls on the extract_numbers function to clean a number of mixed data type columns. Additionally, dates are converted to pandas.datetime objects. Finally the dates_and_times_corrector is called to correct all times for timezones.
 
 impute_columns
 
-This serves to fill missing values. Two different imputers are created for text and numeric data types respectively. Missing text values are replaced with "unknown" for lack of a better strategy and missing numeric values are replaced with the mode of the column. This would ideally be replaced by a more sophisticated strategy later on. Dates are left as they are, hopefully later on they too can be imputed for example by converting to a numeric data type, finding some sort of average measure and then converting back to date. Data is returned a dataframe, however with scrambled column order.
+This serves to fill missing values. Two different imputers are created for text and numeric data types respectively. Missing text values are replaced with "unknown" for lack of a better strategy and missing numeric values are replaced with the mode of the column. This would ideally be replaced by a more sophisticated strategy later on. Dates are left as they are, hopefully later on they too can be imputed for example by converting to a numeric data type, finding some sort of average measure and then converting back to date. Data is returned as a dataframe, however with scrambled column order.
 
 dates_and_times_corrector
 
@@ -64,4 +64,7 @@ extract_numbers
 This extracts numbers from strings. This function calls on the extract_numbers function to extract numbers from string data types that are not fully numerical (eg. "<10" would return 10).
 
 
+**multipli_experiment_1**
+
+This is just some playarund with the data, achieving prediction accuracies above 70% from only the meeting titles with different classifiers (Decision Tree, SVC, Random Forest). Shows some of the weaknesses of our data too. Feel free to continue experimentation on this (maybe add guestno to the classifiers)!
 
