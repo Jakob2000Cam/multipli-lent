@@ -1,0 +1,12 @@
+Requirement already satisfied: pip in ./venv/lib/python3.8/site-packages (21.0.1)
+Collecting freeze
+  Downloading freeze-3.0.tar.gz (188 kB)
+Requirement already satisfied: six in ./venv/lib/python3.8/site-packages (from freeze) (1.15.0)
+Building wheels for collected packages: freeze
+  Building wheel for freeze (setup.py): started
+  Building wheel for freeze (setup.py): finished with status 'done'
+  Created wheel for freeze: filename=freeze-3.0-py3-none-any.whl size=12104 sha256=75ce39a17c6a435c68a8265ccdf06bbcc45e97b97a10c6542c09b3ab29e309cf
+  Stored in directory: /home/jakob/.cache/pip/wheels/9b/c8/58/919fdda51f881bfbf09558405b721d511ea2dabd674127d508
+Successfully built freeze
+Installing collected packages: freeze
+Successfully installed freeze-3.0
