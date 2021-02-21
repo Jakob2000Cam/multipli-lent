@@ -6,6 +6,7 @@ click==7.1.2
 cymem==2.0.5
 DateTime==4.3
 emot==2.1
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0-py3-none-any.whl
 freeze==3.0
 idna==2.10
 Jinja2==2.11.3
