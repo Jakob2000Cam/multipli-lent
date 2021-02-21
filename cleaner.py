@@ -8,8 +8,8 @@ import re
 import os
 
 #creates os independent paths to read and write data
-read_path = os.path.join('data', 'original','labelled_october.csv')
-write_path = os.path.join('data', 'processed', 'cleaned_labelled_october.pkl')
+read_path = os.path.join('data', 'processed','validation.csv')
+write_path = os.path.join('data', 'processed', 'cleaned_validation_october.pkl')
 
 col_names = ['username', 'jobrole', 'instructor', 'companyname', 'timezone', 'companysize',
 			 'teamsize', 'starttime', 'endtime', 'lastsync', 'meetingtitle', 'noguest', 'tag']
@@ -70,9 +70,9 @@ def dates_and_times_corrector(meeting):
     #finds the timechange of the datetime due to the timezone
     if meeting["timezone"] == "":
         time_change = 0
-    elif meeting["timezone"][1] == "+":
+    elif  "+" in str(meeting["timezone"]):
         time_change = int(re.findall(r"\d+", meeting["timezone"])[0])
-    elif meeting["timezone"][1] == "-":
+    elif  "-" in str(meeting["timezone"]):
         time_change = -int(re.findall(r"\d+", meeting["timezone"])[0])
     else:
         time_change = 0

@@ -5,6 +5,7 @@ import re
 from nltk.stem import WordNetLemmatizer
 import os
 
+
 nltk.download('wordnet')
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
@@ -14,9 +15,12 @@ nltk.download('averaged_perceptron_tagger')
 read_path = os.path.join('data', 'processed', 'cleaned_labelled_october.pkl')
 write_path = os.path.join('data', 'processed', 'normalised_labelled_october.pkl')
 #load the labelled cleaned data into the data_frame
-data_frame = pd.read_pickle(r'data/processed/cleaned_labelled_october.pkl')
+data_frame = pd.read_pickle(read_path)
 
 class Normaliser:
+
+    def __init__(self):
+        self.and_symbols_list = ["&", "//", "/", "<>", "< >", " x "]
 
     def normalise(self, text):
         text = self.convert_emojis(text)
@@ -71,6 +75,12 @@ class Normaliser:
         lemmatizer = WordNetLemmatizer()
         lemmatized_output = ''.join([lemmatizer.lemmatize(w) for w in text])
         return lemmatized_output
+
+    def and_sub(self, text):
+        for symbol in self.and_symbols_list:
+            text = text.replace(symbol, "and")
+        return text
+
 
 
 normalise = Normaliser()

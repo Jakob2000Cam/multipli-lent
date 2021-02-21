@@ -4,14 +4,37 @@ import numpy as np
 from nltk import word_tokenize
 import pandas as pd
 
-"""
-cd /venv/lib/python3.8/site-packages/sner
-java -cp stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTaggerServer -port 9198 -model models/english-bidirectional-distsim.tagger
-"""
+teamspirit_keywords = ["lunch hangout", "book club", "fika", "chin-wag", "team meet", "team call", "drinks", "learn"]
+project_keywords = ["standup", "session", "demo", "leads", "leadership", "sync",
+                    "discussion", "plan", "onboarding", "delivery", "updates",
+                    "update", "intro", "introduction", "checkin", "check in",
+                    "catchup", "catch up", "status", "workshop", "planning",
+                    "handover", "department", "alignment", "follow up"]
+# check these words poss add fu or f/u
+time_keywords = ["biweekly", "weekly", "daily", "monthly"]
+broadcast_keywords = ["conference", "panel", "forum", "seminar", "summit", "committee",
+                      "presentation", "all hands", "q & a", "company", "company wide"]
+one_to_one_keywords = ["catchup", "catch up", "chat", "1 – 1", "1-1", "1:1",
+                       "one to one", "1 on 1", "one on one"]
+performance_keywords = ["review", "okr", "orks", "tracker", "feedback", "progress review", "salary review"]
+irrelevant_keywords = ["reminder", "buffer", "break", "annual leave", "busy", "office hours",
+                       "prep", "preparation", "cancel", "clear", "draft", "placeholder",
+                       "offline", "block", "blocked", "dnb", "to do", "todo", "ooo",
+                       "leave work", "edit", "edited", "hold", "birthday", "travel", "a/l",
+                       "webinar"]
+irrelevant_keywords2 = ["meditation", "work out", "haircut", "yoga", "whiskey",
+                        "donate", "clean", "run", "tennis", "workout"]
+irrelevant_keywords_all = irrelevant_keywords + irrelevant_keywords2
+external_keywords = ["call with", "zoom"]
+and_symbols_list = ["&", "//", "/", "<>", "< >", " x "]
+
+all_keywords = teamspirit_keywords + project_keywords + time_keywords + broadcast_keywords + one_to_one_keywords + performance_keywords + irrelevant_keywords + irrelevant_keywords2 + external_keywords
+
+all_keywords += ["meet", "phone"]
 
 #for the named entity recoginition
-from sner import Ner
-tagger = Ner(host = "localhost", port = 9199)
+import spacy
+nlp = spacy.load('en_core_web_sm')
 
 #checks if the user's full name is included in the meeting title, if either username or title blank returns 0
 def users_fullname(meeting):
@@ -27,6 +50,15 @@ def not_workday(meeting):
     if pd.isnull(meeting["starttime"]):
         return 0
     if meeting["starttime"].isocalendar()[2] >= 6:
+        return 1
+    else:
+        return 0
+
+#returns if day is day of the week
+def which_day(meeting, day):
+    if pd.isnull(meeting["starttime"]):
+        return 0
+    if meeting["starttime"].isocalendar()[2] == day:
         return 1
     else:
         return 0
@@ -71,9 +103,9 @@ def brackets_following_person(meeting):
     if pd.isnull(meeting["meetingtitle"]):
         return 0
     title = and_sub(meeting["meetingtitle"])
-    for (word, entity) in tagger.tag(title):
-        if entity == "PERSON":
-            start_index = title.index(word) + len(word)
+    for token in nlp(title).ents:
+        if token.label_ == "PERSON":
+            start_index = title.index(token.text) + len(token.text)
             if start_index >= len(title) - 2:
                 return 0
             elif title[start_index] == "(" or title[start_index + 1] == "(":
@@ -85,26 +117,12 @@ def brackets_following_person(meeting):
 def and_between_persons(meeting):
     if pd.isnull(meeting["meetingtitle"]):
         return 0
-    entities = tagger.tag(meeting["meetingtitle"])
+    entities = nlp(meeting["meetingtitle"]).ents
     for index in range(len(entities)):
-        if entities[index][0] == "and":
+        if entities[index].text == "and":
             if index > 0 and index < len(entities) - 1:
-                if entities[index - 1][1] == "PERSON" and entities[index + 1][1] == "PERSON":
+                if entities[index - 1].label_ == "PERSON" and entities[index + 1].label_ == "PERSON":
                     return 1
-    return 0
-
-
-# checks if 2 person entities follow each other
-def firstname_and_surname(meeting):
-    if pd.isnull(meeting["meetingtitle"]):
-        return 0
-    title = meeting["meetingtitle"]
-    title = and_sub(title)
-    title = lower_keywords(title)
-    entities = tagger.tag(title)
-    for index in range(len(entities) - 1):
-        if entities[index][1] == "PERSON" and entities[index + 1][1] == "PERSON":
-            return 1
     return 0
 
 def and_sub(title):
@@ -113,6 +131,20 @@ def and_sub(title):
         while symbol in str(and_title).lower():
             and_title = replace_with(and_title, symbol, " and ")
     return and_title
+
+# checks if 2 person entities follow each other
+def firstname_and_surname(meeting):
+    if pd.isnull(meeting["meetingtitle"]):
+        return 0
+    title = meeting["meetingtitle"]
+    title = and_sub(title)
+    title = lower_keywords(title)
+    entities = nlp(title).ents
+    for index in range(len(entities) - 1):
+        if entities[index].label_ == "PERSON" and entities[index + 1].label_ == "PERSON":
+            return 1
+    return 0
+
 
 def replace_with(string, target, replacement):
     if target not in string:
@@ -145,9 +177,9 @@ def person_in_meeting(meeting):
         return 0
     title = lower_keywords(meeting["meetingtitle"])
     title = and_sub(title)
-    entities = tagger.tag(title)
-    for (word, entity) in entities:
-        if entity == "PERSON":
+    entities = nlp(title).ents
+    for token in entities:
+        if token.label_ == "PERSON":
             return 1
     return 0
 
@@ -160,6 +192,9 @@ def lower_keywords(title):
     return title
 
 
+
+
+
 # returns 1 if the user's company is in the title
 def user_company_in_title(meeting):
     if not pd.isnull(meeting["companyname"]) and  pd.isnull(meeting["meetingtitle"]):
@@ -168,7 +203,8 @@ def user_company_in_title(meeting):
             return 1
         else:
             return 0
-
+    else:
+        return 0
 
 # creates a dictonary of company titles including some alternative spellings
 def create_company_dict(meeting_list):
@@ -183,30 +219,16 @@ def create_company_dict(meeting_list):
     return company_dic
 
 
-and_symbols_list = ["&", "//", "/", "<>", "< >", " x "]
-teamspirit_keywords = ["lunch hangout", "book club", "fika", "chin-wag", "team meet", "team call", "drinks", "learn"]
-project_keywords = ["standup", "session", "demo", "leads", "leadership", "sync",
-                    "discussion", "plan", "onboarding", "delivery", "updates",
-                    "update", "intro", "introduction", "checkin", "check in",
-                    "catchup", "catch up", "status", "workshop", "planning",
-                    "handover", "department", "alignment", "follow up"]
-# check these words poss add fu or f/u
-time_keywords = ["biweekly", "weekly", "daily", "monthly"]
-broadcast_keywords = ["conference", "panel", "forum", "seminar", "summit", "committee",
-                      "presentation", "all hands", "q & a", "company", "company wide"]
-one_to_one_keywords = ["catchup", "catch up", "chat", "1 – 1", "1-1", "1:1",
-                       "one to one", "1 on 1", "one on one"]
-performance_keywords = ["review", "okr", "orks", "tracker", "feedback", "progress review", "salary review"]
-irrelevant_keywords = ["reminder", "buffer", "break", "annual leave", "busy", "office hours",
-                       "prep", "preparation", "cancel", "clear", "draft", "placeholder",
-                       "offline", "block", "blocked", "dnb", "to do", "todo", "ooo",
-                       "leave work", "edit", "edited", "hold", "birthday", "travel", "a/l",
-                       "webinar"]
-irrelevant_keywords2 = ["meditation", "work out", "haircut", "yoga", "whiskey",
-                        "donate", "clean", "run", "tennis", "workout"]
-irrelevant_keywords_all = irrelevant_keywords + irrelevant_keywords2
-external_keywords = ["call with", "zoom"]
+def manager_in_meeting(meeting):
+    manager_list = re.sub("[^\w]", " ",  meeting['instructor']).split()
+    for word in manager_list:
+        if word in meeting['meetingtitle']:
+            return 1
+    else:
+        return 0
 
-all_keywords = teamspirit_keywords + project_keywords + time_keywords + broadcast_keywords + one_to_one_keywords + performance_keywords + irrelevant_keywords + irrelevant_keywords2 + external_keywords
+##d = {'instructor': ["hi", "ho"], 'meetingtitle': ["Hello there ho how are you", "ho what is this"]}
 
-all_keywords += ["meet", "phone"]
+#test_df = pd.DataFrame(data=d)
+
+#print(test_df.apply(manager_in_meeting, axis=1))
