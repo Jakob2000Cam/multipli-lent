@@ -3,8 +3,10 @@ import re
 import numpy as np
 from nltk import word_tokenize
 import pandas as pd
-
+import nltk
+nltk.download("punkt")
 teamspirit_keywords = ["lunch hangout", "book club", "fika", "chin-wag", "team meet", "team call", "drinks", "learn"]
+
 project_keywords = ["standup", "session", "demo", "leads", "leadership", "sync",
                     "discussion", "plan", "onboarding", "delivery", "updates",
                     "update", "intro", "introduction", "checkin", "check in",
