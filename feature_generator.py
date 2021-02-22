@@ -2,6 +2,11 @@ from features import *
 import pandas as pd
 import os
 
+"""
+java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer -port 9000 -timeout 15000
+"""
+
+
 #creates os independent paths to read and write data
 read_path = os.path.join('data', 'processed', 'cleaned_labelled_october.pkl')
 write_path = os.path.join('data', 'processed', 'features_october.pkl')
@@ -72,4 +77,4 @@ def feature_creator(data_frame):
 
 feature_frame =feature_creator(data_frame) 
 
-feature_frame.to_pkl(write_path)
+feature_frame.to_pickle(write_path)

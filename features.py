@@ -2,7 +2,11 @@ import datetime
 import re
 import numpy as np
 from nltk import word_tokenize
+import nltk
 import pandas as pd
+
+
+nltk.download('punkt')
 
 teamspirit_keywords = ["lunch hangout", "book club", "fika", "chin-wag", "team meet", "team call", "drinks", "learn"]
 project_keywords = ["standup", "session", "demo", "leads", "leadership", "sync",
@@ -226,9 +230,3 @@ def manager_in_meeting(meeting):
             return 1
     else:
         return 0
-
-##d = {'instructor': ["hi", "ho"], 'meetingtitle': ["Hello there ho how are you", "ho what is this"]}
-
-#test_df = pd.DataFrame(data=d)
-
-#print(test_df.apply(manager_in_meeting, axis=1))
