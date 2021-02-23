@@ -3,8 +3,10 @@ catalogue==2.0.1
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
+colorama==0.4.4
 cymem==2.0.5
 DateTime==4.3
+demoji==0.4.0
 emot==2.1
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0-py3-none-any.whl
 freeze==3.0
@@ -34,9 +36,11 @@ sner==0.2.12
 spacy==3.0.3
 spacy-legacy==3.0.1
 srsly==2.4.0
+textblob==0.15.3
 thinc==8.0.1
 threadpoolctl==2.1.0
 tqdm==4.57.0
+twokenize==1.0.0
 typer==0.3.2
 urllib3==1.26.3
 wasabi==0.8.2
