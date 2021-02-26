@@ -25,14 +25,28 @@ In order to develop this code please ask the owner of the directory to make you 
 
 Please make sure that you don't develop in the main branch, by running `git branch` and ensuring that the asterisk is next to your own branch rather than the main branch.
 
-## Outline of general workflow
+## General Approach
 
-* Preprocess data using cleaner.py
+* Preprocess text to get it as close to natural language as possible
+* Use a NER to filter out names and replace with the generic terms eg "John" could be replaced with "manager"
+* Use transfer learning to retrain a trained word embedding it on the labelled dataset
+* Normalise numerical features
+* Train two classifiers, for meeting type and "impactfulness"
+* Use active learning to label more data and improve the classifiers
+* Use unsupervised clustering algorithm to group together similar people in order to personalise nudge suggestions
 
 
 ## Technical documentation
 
 This documentation outlines the functionality of the code and explains all the statistical decisions made along the process. It is intended as an aid for future developers.
+
+**main**
+
+This file runs the main pipeline, loads in a csv file and uses the other modules to clean and preprocess that file. It will also be used to train the model.
+
+**cleaner2**
+
+Replaces the old cleaner and normaliser files. This normalises text, extracts entities etc. Numerical values are imputed using the mode and datetime values are imputed using the mean. Has issues imputing enddates, but shouldn't matter too much as the variance on those will too large for it to be a useful feature. Could maybe think about using mean time later. Need to make sure that we don't run into issues with NaT values.
 
 **cleaner**
 
@@ -67,4 +81,5 @@ This extracts numbers from strings. This function calls on the extract_numbers f
 **multipli_experiment_1**
 
 This is just some playarund with the data, achieving prediction accuracies above 70% from only the meeting titles with different classifiers (Decision Tree, SVC, Random Forest). Shows some of the weaknesses of our data too. Feel free to continue experimentation on this (maybe add guestno to the classifiers)!
+
 
